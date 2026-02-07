@@ -45,48 +45,7 @@ commonMain.dependencies {
 
 Below is the high-level architecture of the **Dynamic Theme Multiplatform Library**:
 
-```mermaid
-flowchart TD
-    subgraph Controller["ThemeController"]
-        A1[State Flow]
-        A2[Theme Selection]
-    end
-
-    subgraph Registry["ThemeRegistry"]
-        B1[ThemeDefinition]
-        B2[ThemeFamily]
-    end
-
-    subgraph Store["ThemeStore"]
-        C1[SettingsThemeStore]
-        C2[Persistence Layer]
-    end
-
-    subgraph System["SystemThemeProvider"]
-        D1[Detects Light/Dark Mode]
-    end
-
-    subgraph UI["UI Layer"]
-        E1[DynamicThemeProvider]
-        E2[Material3Adapter]
-        E3[AppUI]
-    end
-
-    Controller --> Registry
-    Controller --> Store
-    Controller --> System
-    Controller --> UI
-
-    Registry --> B1
-    Registry --> B2
-
-    Store --> C1
-    Store --> C2
-
-    UI --> E1
-    UI --> E2
-    UI --> E3
-```
+<p align="center"> <img src="images/architecture.png" alt="Theme Picker Bottom Sheet Preview" width="3840"/> </p>
 
 ---
 

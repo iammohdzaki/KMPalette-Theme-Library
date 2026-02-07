@@ -145,7 +145,7 @@ fun ThemePickerBottomSheet(
 
             sortedFamilies.forEach { family ->
                 val isSelectedFamily = state.resolved.id in listOf(family.light.id, family.dark.id)
-                val isDarkMode = state.selection.mode == ThemeMode.DARK
+                val isDarkMode = state.isDark
 
                 Row(
                     modifier = Modifier

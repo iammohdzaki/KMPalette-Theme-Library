@@ -13,7 +13,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +49,7 @@ import com.zaki.dynamic.core.LocalThemeController
 import com.zaki.dynamic.core.adapter.Material3Adapter
 import com.zaki.dynamic.core.controller.ThemeController
 import com.zaki.dynamic.core.model.ThemeId
+import com.zaki.dynamic.core.model.ThemeMode
 import com.zaki.dynamic.core.provider.DynamicThemeProvider
 import com.zaki.dynamic.core.provider.PlatformSystemThemeProvider
 import com.zaki.dynamic.core.registry.DefaultThemeRegistryFactory
@@ -95,6 +98,15 @@ private fun AppScaffold() {
                     )
                 },
                 actions = {
+                    val isDark = state.isDark
+                    IconButton(onClick = {
+                        controller.setMode(if (isDark) ThemeMode.LIGHT else ThemeMode.DARK)
+                    }) {
+                        Icon(
+                            if (isDark) Icons.Default.DarkMode else Icons.Default.LightMode,
+                            contentDescription = "Toggle theme"
+                        )
+                    }
                     IconButton(onClick = { showSheet = true }) {
                         Icon(Icons.Default.ColorLens, contentDescription = "Pick theme")
                     }

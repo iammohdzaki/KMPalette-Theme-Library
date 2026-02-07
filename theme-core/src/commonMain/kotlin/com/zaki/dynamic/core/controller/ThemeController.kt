@@ -139,7 +139,21 @@ class ThemeController(
         val theme = selection.explicitThemeId?.let { registry.get(it) }
             ?: pickDefault(isDark)
 
-        return ThemeState(selection, theme)
+        // Ensure the resolved theme matches the requested mode (dark/light)
+        // If the explicit theme doesn't match the mode, we should probably try to find the matching variant in the same family
+        val finalTheme = if (theme.palette.isDark != isDark) {
+             // Try to find the family of this theme
+             val family = registry.families().find { it.light.id == theme.id || it.dark.id == theme.id }
+             if (family != null) {
+                 if (isDark) family.dark else family.light
+             } else {
+                 theme // Fallback if no family found (shouldn't happen if properly registered)
+             }
+        } else {
+            theme
+        }
+
+        return ThemeState(selection, finalTheme)
     }
 
     /**
