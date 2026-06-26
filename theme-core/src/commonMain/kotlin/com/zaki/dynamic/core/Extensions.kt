@@ -44,3 +44,54 @@ fun ColorScheme.toPalette(isDark: Boolean): Palette {
         isDark = isDark
     )
 }
+
+fun ColorScheme.toThemeDefinition(
+    id: String,
+    displayName: String,
+    isDark: Boolean,
+    typography: com.zaki.dynamic.core.model.tokens.TypographyTokens = com.zaki.dynamic.core.themes.defaultTypography(),
+    shapes: com.zaki.dynamic.core.model.tokens.ShapeTokens = com.zaki.dynamic.core.themes.defaultShapes(),
+    meta: Map<String, String> = emptyMap()
+): com.zaki.dynamic.core.model.ThemeDefinition {
+    return com.zaki.dynamic.core.model.ThemeDefinition(
+        id = com.zaki.dynamic.core.model.ThemeId(id),
+        displayName = displayName,
+        palette = this.toPalette(isDark),
+        typography = typography,
+        shapes = shapes,
+        meta = meta
+    )
+}
+
+fun createThemeFamily(
+    id: String,
+    displayName: String,
+    lightScheme: ColorScheme,
+    darkScheme: ColorScheme,
+    typography: com.zaki.dynamic.core.model.tokens.TypographyTokens = com.zaki.dynamic.core.themes.defaultTypography(),
+    shapes: com.zaki.dynamic.core.model.tokens.ShapeTokens = com.zaki.dynamic.core.themes.defaultShapes(),
+    meta: Map<String, String> = emptyMap()
+): com.zaki.dynamic.core.model.ThemeFamily {
+    val lightTheme = lightScheme.toThemeDefinition(
+        id = "${id}_light",
+        displayName = "$displayName Light",
+        isDark = false,
+        typography = typography,
+        shapes = shapes,
+        meta = meta
+    )
+    val darkTheme = darkScheme.toThemeDefinition(
+        id = "${id}_dark",
+        displayName = "$displayName Dark",
+        isDark = true,
+        typography = typography,
+        shapes = shapes,
+        meta = meta
+    )
+    return com.zaki.dynamic.core.model.ThemeFamily(
+        id = com.zaki.dynamic.core.model.ThemeId(id),
+        displayName = displayName,
+        light = lightTheme,
+        dark = darkTheme
+    )
+}

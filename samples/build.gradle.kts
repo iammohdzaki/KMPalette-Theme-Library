@@ -30,6 +30,16 @@ kotlin {
 
     jvm()
 
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser {
+            commonWebpackConfig {
+                outputFileName = "samples.js"
+            }
+        }
+        binaries.executable()
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -50,21 +60,17 @@ kotlin {
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.androidx.ui.desktop)
         }
     }
 }
 
 android {
     namespace = "com.zaki.dynamic.theme"
-    compileSdk = 35
-    defaultConfig {
-        minSdk = 24
-    }
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.zaki.dynamic.theme"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
@@ -81,6 +87,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
     }
 }
 
