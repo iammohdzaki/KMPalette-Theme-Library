@@ -9,6 +9,7 @@ import com.zaki.dynamic.core.model.ThemeState
 import com.zaki.dynamic.core.persistance.ThemeStore
 import com.zaki.dynamic.core.provider.SystemThemeProvider
 import com.zaki.dynamic.core.registry.ThemeRegistry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,10 +45,12 @@ class ThemeController(
     private val registry: ThemeRegistry,
     private val store: ThemeStore,
     val system: SystemThemeProvider,
-    private val defaultThemeId: ThemeId
+    private val defaultThemeId: ThemeId,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _state = MutableStateFlow<ThemeState?>(null)
+    private var lastKnownSystemDark: Boolean? = null
 
     /**
      * Reactive state flow of the current theme.
@@ -94,6 +97,20 @@ class ThemeController(
     }
 
     /**
+     * Notifies the controller of the current system dark mode status.
+     * This is useful for reactive theme updates from the UI layer.
+     */
+    fun notifySystemDarkChanged(isDark: Boolean) {
+        if (lastKnownSystemDark != isDark) {
+            lastKnownSystemDark = isDark
+            val currentSelection = current().selection
+            if (currentSelection.mode == ThemeMode.SYSTEM) {
+                update(currentSelection)
+            }
+        }
+    }
+
+    /**
      * Sets an explicit theme by its ID.
      *
      * If `null`, the controller will use the default strategy
@@ -131,7 +148,7 @@ class ThemeController(
      */
     private fun resolve(selection: ThemeSelection): ThemeState {
         val isDark = when (selection.mode) {
-            ThemeMode.SYSTEM -> system.isSystemDark()
+            ThemeMode.SYSTEM -> lastKnownSystemDark ?: system.isSystemDark()
             ThemeMode.DARK -> true
             ThemeMode.LIGHT -> false
         }

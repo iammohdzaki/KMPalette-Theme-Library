@@ -1,9 +1,8 @@
-@file:OptIn(ExperimentalWasmDsl::class)
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -19,7 +18,7 @@ version = findProperty("version") as String? ?: "0.0.5"
 
 android {
     namespace = "com.zaki.dynamic.theme"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig { minSdk = 24 }
 
     compileOptions {
@@ -36,9 +35,17 @@ kotlin {
         }
     }
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    )
+
     applyDefaultHierarchyTemplate()
     jvm("desktop")
-    wasmJs()
+    wasmJs {
+        browser()
+    }
     jvmToolchain(17)
     sourceSets {
         val commonMain by getting {
@@ -46,8 +53,13 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.json)
-                implementation(compose.material3)
+                api(compose.material3)
                 implementation(compose.materialIconsExtended)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
     }

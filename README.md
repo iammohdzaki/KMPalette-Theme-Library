@@ -29,7 +29,14 @@ It allows you to:
 
 ---
 
-<p align="center"> <img src="images/img.png" alt="Theme Picker Bottom Sheet Preview" width="400"/> </p>
+<p align="center">
+  <img src="images/mobile_light_ui.png" height="350" alt="Mobile Light Theme" />&nbsp;&nbsp;
+  <img src="images/mobile_dark_ui.png" height="350" alt="Mobile Dark Theme" />
+</p>
+<p align="center">
+  <img src="images/desktop_light_ui.png" width="400" alt="Desktop Light Theme" />&nbsp;&nbsp;
+  <img src="images/desktop_dark_ui.png" width="400" alt="Desktop Dark Theme" />
+</p>
 
 ## 🚀 Installation
 
@@ -122,7 +129,7 @@ DynamicThemeProvider(
 
 ## 🎨 Theme Picker UI
 
-A ready-to-use **Bottom Sheet** for switching themes:
+A ready-to-use **Responsive Picker UI** for switching themes:
 
 ```kotlin
 ThemePickerBottomSheet(
@@ -130,10 +137,15 @@ ThemePickerBottomSheet(
 )
 ```
 
+### 📱 Responsive & Adaptive Layouts
+The picker automatically adjusts to provide the best design experience based on the target platform:
+- **Android & iOS**: Shows as a native **Modal Bottom Sheet**.
+- **Desktop (JVM) & Web (WasmJS)**: Shows as a centered, focused **Modal Dialog** to prevent stretched layouts on wide desktop monitors.
+
 It shows:
-- **Theme mode toggle** → System / Light / Dark
-- **Theme families** → Select from available themes
-- **DualVariantCircle** → Preview both Light & Dark variant in one icon
+- **Segmented Mode Selector** → Capsule switcher for theme modes (System, Light, Dark)
+- **Theme Palettes** → Dynamic selection list of all registered theme families
+- **Palette Previews** → Overlapping 4-color circles representing the active colors (Primary, Secondary, Tertiary, Surface Variant) of each family
 
 ---
 
@@ -185,10 +197,51 @@ fun App() {
 
 ## 🔧 Extending the Library
 
-- Add new themes by **registering families** in the registry
-- Provide **custom adapters** (e.g., Material 2, your own design system)
-- Replace persistence with your own store (e.g., `DataStore`, `Database`)
-- Add new UI components (custom pickers, theme previews)
+### 1. Register Custom Themes Easily
+Instead of mapping colors manually, use the boilerplate-reducing helper extension functions in your source code:
+- `ColorScheme.toThemeDefinition(...)` converts a standard Compose `ColorScheme` to a `ThemeDefinition`.
+- `createThemeFamily(...)` builds a paired Light/Dark `ThemeFamily` in a single line:
+
+```kotlin
+val myFamily = createThemeFamily(
+    id = "neon_city",
+    displayName = "Neon City",
+    lightScheme = neonLightColorScheme,
+    darkScheme = neonDarkColorScheme
+)
+registry.registerFamily(myFamily)
+```
+
+### 2. Custom Adapters (e.g., Experimental `MaterialExpressiveTheme`)
+The flexible `ComposeThemeAdapter` structure makes the library 100% future-proof. For example, if you want to support experimental expressive motion and styling features in newer Compose versions, you can implement a custom adapter in your app:
+
+```kotlin
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+class ExpressiveM3Adapter : ComposeThemeAdapter {
+    @Composable
+    override fun MaterialTheme(
+        theme: ThemeDefinition,
+        typography: Typography?,
+        shapes: Shapes?,
+        content: @Composable () -> Unit
+    ) {
+        val colors = ColorScheme( /* Map theme.palette colors... */ )
+        MaterialExpressiveTheme(
+            colorScheme = colors,
+            typography = typography ?: MaterialTheme.typography,
+            shapes = shapes ?: MaterialTheme.shapes,
+            content = content
+        )
+    }
+}
+```
+And pass it directly to `DynamicThemeProvider(adapter = ExpressiveM3Adapter())`.
+
+---
+
+## 🤖 AI Integration Skill
+
+If you are using an AI coding assistant (such as GitHub Copilot, Cursor, or Gemini) to integrate this library, you can refer it to the [SKILL.md](file:///D:/Projects/KMPDynamicTheme/SKILL.md) file at the root of the repository. It contains structured instructions, design guidelines, and code snippets formatted for AI context injection.
 
 ---
 

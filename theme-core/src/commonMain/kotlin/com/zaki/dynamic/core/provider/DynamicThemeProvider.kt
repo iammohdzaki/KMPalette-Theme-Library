@@ -1,9 +1,11 @@
 package com.zaki.dynamic.core.provider
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.zaki.dynamic.core.LocalThemeController
@@ -44,6 +46,11 @@ fun DynamicThemeProvider(
     shapes: Shapes? = null,
     content: @Composable () -> Unit
 ) {
+    val systemDark = isSystemInDarkTheme()
+    LaunchedEffect(systemDark) {
+        controller.notifySystemDarkChanged(systemDark)
+    }
+
     val state by controller.state.collectAsState()
     CompositionLocalProvider(
         LocalThemeController provides
